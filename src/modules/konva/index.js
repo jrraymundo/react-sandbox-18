@@ -1,13 +1,15 @@
 import React, { useState, useEffect, useRef } from 'react'
 import Draftjs from '../draftjs';
-import { Stage, Layer, Rect, Circle, Transformer } from 'react-konva';
+import { Stage, Layer, Rect, Circle, Transformer, Group } from 'react-konva';
+import { Html } from 'react-konva-utils'
 
 export default function Konvajs() {
 
+    const groupRef = useRef(null)
     const circRef = useRef(null)
     const rectRef = useRef(null)
     const transformRef = useRef(null)
-
+    
     const rectProps = {
         ref: rectRef,
         width: 50,
@@ -15,7 +17,7 @@ export default function Konvajs() {
         fill: 'red',
         draggable: true,
         onClick: (e) => {
-            transformRef.current.nodes([rectRef.current, circRef.current])
+            transformRef.current.nodes([rectRef.current])
             transformRef.current.getLayer().batchDraw()
         }
     }
@@ -37,14 +39,29 @@ export default function Konvajs() {
         <div>
             <Draftjs />
             <Stage 
-                style={{ background: 'aqua' }} 
                 width={window.innerWidth} 
                 height={window.innerHeight}
             >
                 <Layer>
-                    <Rect {...rectProps} />
                     <Circle {...circleProps} />
                     <Transformer ref={transformRef} />
+                    {/* <Group 
+                        ref={groupRef}
+                        draggable={true}
+                        height={400}
+                        width={800}
+                        onClick={(e) => {
+                            transformRef.current.nodes([groupRef.current])
+                            transformRef.current.getLayer().batchDraw()
+                        }}
+                    >
+                        <Rect fill='red' width='800' height='400' opacity={0.5} />
+                        <Html 
+                            divProps={{ style: { zIndex: -1 } }}
+                        >
+                            <Draftjs />
+                        </Html>
+                    </Group> */}
                 </Layer>
             </Stage>
         </div>

@@ -1,7 +1,8 @@
-import { useState } from 'react'
+import { useState, useRef } from 'react'
 import { Editor, EditorState, RichUtils } from 'draft-js';
 import compositeDecorator from './CompositeDecorator';
 import blockStyleFn from './blockStyleFn';
+import html2canvas from 'html2canvas';
 import 'draft-js/dist/Draft.css';
 
 // BOOKMARK: https://draftjs.org/docs/advanced-topics-inline-styles
@@ -34,6 +35,7 @@ const styleMap = {
 }
 
 export default function Draftjs() {
+    const editorRef = useRef(null)
     const [editorState, setEditorState] = useState(EditorState.createEmpty(compositeDecorator))
 
     const handleEditorState = (e) => setEditorState(e)
@@ -59,6 +61,13 @@ export default function Draftjs() {
     const onFontSizeChange = (e) => {
         const fontSize = e.target.value
         handleEditorState(RichUtils.toggleInlineStyle(editorState, fontSize))
+    }
+
+    const saveToCanvas = () => {
+        html2canvas(editorRef.current.editor)
+        .then(canvas => {
+            document.body.appendChild(canvas)
+        })
     }
 
     const containerStyle = { 
@@ -101,10 +110,14 @@ export default function Draftjs() {
                         <option value='FONT_SIZE_32'>32</option>
                     </select>
                 </div>
+                <div className='controls'>
+                    <button onClick={saveToCanvas}>Save to canvas</button>
+                </div>
             </div>
 
             <div style={{ color: 'black', background: '#88caca', height: 300 }}>
                 <Editor 
+                    ref={editorRef}
                     editorState={editorState} // The editorState that holds every info of the state (text, history etc.)
                     onChange={handleEditorState} // Updating the editorState object every text change
                     handleKeyCommand={handleKeyCommand} // Handling bold, italic, underline, etc. commands
